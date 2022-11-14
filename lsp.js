@@ -15,15 +15,17 @@ const msg = 'Node.js via lsp extension';
 
 // Using: Map to dedupe Messages received as JSON formated Text.
 // KEY::MSG_AS_JSON VALUE: CONTENT_JSON_RESULT
-const lspMessagesBuffer = new Map();
+const lspMessagesBuffer = [];
 const connections = []
+const listenPath = './.node-sock'
+fs.unlink(listenPath)
 // TODO: Unlink before start
 net.createServer((socket) => {
   socket.repl = repl.start({
     prompt: '> ',
     input: socket,
     output: socket
-  }).on('exit', socket.end);
+  }).on('exit', socket.end).context.socket = socket;
   connections.push({ socket });
-}).listen('/tmp/node-sock'); // port numbers also supported see documentation
+}).listen(listenPath); // port numbers also supported see documentation
 
